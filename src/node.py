@@ -72,6 +72,14 @@ class Node:
         self.children.insert(i + 1, new_node)
         self.keys.insert(i, mid_key)
 
+    def height(self):
+        height = 0
+        node = self
+        while not node.is_leaf:
+            node = node.children[0]
+            height += 1
+        return height
+    
     @property
     def is_leaf(self) -> bool:
         return len(self.children) == 0
