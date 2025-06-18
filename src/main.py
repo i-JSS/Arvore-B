@@ -1,15 +1,10 @@
 import icontract
+from tree import Tree
 
-@icontract.invariant(lambda self: all(self.keys[i] <= self.keys[i + 1] for i in range(len(self.keys) - 1)))
-class Node:
-
-    def __init__(self, t: int, n: int, leaf: bool):
-        self.t = t
-        self.n = n
-        self.leaf = leaf
-        self.keys = []
-        self.children = []
-
-
-
-print("TOTOLA")
+if __name__ == "__main__":
+    tree = Tree(2)
+    for k in [10, 20, 5, 6, 12, 30, 7, 17, 21, 22, 34, 23, 24, 35]:
+        tree.print_tree()
+        tree.insert(k)
+        print("\n\n")
+    tree.print_tree()
