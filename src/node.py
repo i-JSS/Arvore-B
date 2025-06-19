@@ -68,6 +68,16 @@ class Node:
             height += 1
         return height
 
+    def print_tree(self, level:int = 0):
+        print(("  " * level), end='')
+        if level > 0:
+            print("- ", end='')
+        print(self.keys)
+
+        if not self.is_leaf:
+            for child in self.children:
+                child.print_tree(level + 1)
+
     @property
     def is_leaf(self) -> bool:
         return len(self.children) == 0
