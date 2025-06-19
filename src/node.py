@@ -58,6 +58,19 @@ class Node:
             node = node.children[0]
             height += 1
         return height
+
+    def valid_num_keys(self) -> bool:
+        if self.is_root:
+            return self.is_leaf or (1 <= self.num_keys <= 2 * self.order - 1)
+        else:
+            return self.order - 1 <= self.num_keys <= 2 * self.order -1
+
+    def valid_num_children(self) -> bool:
+        if self.is_leaf:
+            return self.num_children == 0
+        if self.is_root:
+            return 2 <= self.num_children <= 2 * self.order
+        return self.order <= self.num_children <= 2 * self.order
     
     @property
     def is_leaf(self) -> bool:
@@ -82,16 +95,3 @@ class Node:
     @property
     def num_keys(self) -> int:
         return len(self.keys)
-
-    def valid_num_keys(self) -> bool:
-        if self.is_root:
-            return self.is_leaf or (1 <= self.num_keys <= 2 * self.order - 1)
-        else:
-            return self.order - 1 <= self.num_keys <= 2 * self.order -1
-
-    def valid_num_children(self) -> bool:
-        if self.is_leaf:
-            return self.num_children == 0
-        if self.is_root:
-            return 2 <= self.num_children <= 2 * self.order
-        return self.order <= self.num_children <= 2 * self.order
