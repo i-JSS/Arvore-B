@@ -71,6 +71,11 @@ class Node:
         if self.is_root:
             return 2 <= self.num_children <= 2 * self.order
         return self.order <= self.num_children <= 2 * self.order
+
+    def subtree_valid(self) -> bool:
+        if not (self.valid_num_keys() and self.valid_num_children()):
+            return False
+        return all(child.subtree_valid() for child in self.children)
     
     @property
     def is_leaf(self) -> bool:
