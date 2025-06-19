@@ -59,6 +59,16 @@ class Node:
             height += 1
         return height
 
+    def print_tree(self, level:int = 0):
+        print(("  " * level), end='')
+        if level > 0:
+            print(f"depth: {level} - ", end='')
+        print(self.keys)
+
+        if not self.is_leaf:
+            for child in self.children:
+                child.print_tree(level + 1)
+
     def valid_num_keys(self) -> bool:
         if self.is_root:
             return self.is_leaf or (1 <= self.num_keys <= 2 * self.order - 1)
@@ -76,7 +86,7 @@ class Node:
         if not (self.valid_num_keys() and self.valid_num_children()):
             return False
         return all(child.subtree_valid() for child in self.children)
-    
+
     @property
     def is_leaf(self) -> bool:
         return len(self.children) == 0

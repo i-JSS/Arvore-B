@@ -1,3 +1,5 @@
+from typing import List
+
 import icontract
 from node import Node
 
@@ -5,6 +7,13 @@ class BTree:
     def __init__(self, order: int):
         self.order: int = order
         self.root: Node = Node(order=order, is_root=True)
+
+    def __iadd__(self, other):
+        if isinstance(other, int):
+            self.insert(other)
+        elif isinstance(other, List):
+            self.insertall(other)
+        return self
 
     def height(self):
         return self.root.height()
@@ -21,6 +30,10 @@ class BTree:
     def remove(self, key):
         pass
 
+    def insertall(self, key: List[int]) -> None:
+        for k in key:
+            self.insert(k)
+
     @icontract.snapshot(lambda self: self.height(), name="height")
     @icontract.ensure(lambda self, OLD: self.height() == OLD.height + 1)
     def _grow_tree(self):
@@ -30,12 +43,5 @@ class BTree:
         self.root.is_root = False
         self.root = new_root
 
-    def print_tree(self, node:Node = None, level:int = 0):
-        if node is None:
-            node = self.root
-
-        print("Camada: ", level , ("  " * level) + str(node.keys))
-
-        if not node.is_leaf:
-            for child in node.children:
-                self.print_tree(child, level + 1)
+    def print_tree(self):
+        self.root.print_tree()
