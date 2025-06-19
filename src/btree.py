@@ -9,6 +9,14 @@ class BTree:
     def height(self):
         return self.root.height()
 
+    def _all_nodes_valid(self) -> bool:
+        def check(node):
+            if not (node.valid_num_keys() and node.valid_num_children()):
+                return False
+            return all(check(child) for child in node.children)
+        return check(self.root)
+
+    @icontract.ensure(lambda self: self._all_nodes_valid())
     def insert(self, key):
         if self.root.is_full:
             self._grow_tree()
@@ -27,7 +35,7 @@ class BTree:
         if node is None:
             node = self.root
 
-        print(("  " * level) + str(node.keys))
+        print("Camada: ", level , ("  " * level) + str(node.keys))
 
         if not node.is_leaf:
             for child in node.children:
