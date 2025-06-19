@@ -52,22 +52,14 @@ class Node:
         self.keys.insert(i, mid_key)
 
     def height(self):
-        height = 0
-        node = self
-        while not node.is_leaf:
-            node = node.children[0]
-            height += 1
-        return height
+        if len(self.children) == 0:
+            return 0
+        return max([child.height() for child in self.children]) + 1
 
     def print_tree(self, level:int = 0):
-        print(("  " * level), end='')
-        if level > 0:
-            print(f"depth: {level} - ", end='')
-        print(self.keys)
-
-        if not self.is_leaf:
-            for child in self.children:
-                child.print_tree(level + 1)
+        print(f'{level}:{"  " * level}{"- " if level > 0 else ""} {self.keys}')
+        for child in self.children:
+            child.print_tree(level + 1)
 
     def valid_num_keys(self) -> bool:
         if self.is_root:
