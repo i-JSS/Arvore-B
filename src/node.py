@@ -72,18 +72,23 @@ class Node:
             return 2 <= self.num_children <= 2 * self.order
         return self.order <= self.num_children <= 2 * self.order
 
+    def subtree_valid(self) -> bool:
+        if not (self.valid_num_keys() and self.valid_num_children()):
+            return False
+        return all(child.subtree_valid() for child in self.children)
+
     @property
     def is_leaf(self) -> bool:
         return len(self.children) == 0
-
+    
     @property
     def min_keys(self) -> int:
         return 0 if self.is_root else self.order - 1
-
+    
     @property
     def max_keys(self) -> int:
         return 2 * self.order - 1
-
+    
     @property
     def is_full(self) -> bool:
         return self.max_keys == self.num_keys
@@ -91,7 +96,7 @@ class Node:
     @property
     def num_children(self) -> int:
         return len(self.children)
-
+    
     @property
     def num_keys(self) -> int:
         return len(self.keys)

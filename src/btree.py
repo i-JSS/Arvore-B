@@ -18,18 +18,17 @@ class BTree:
     def height(self):
         return self.root.height()
 
-    def _all_nodes_valid(self) -> bool:
-        def check(node):
-            if not (node.valid_num_keys() and node.valid_num_children()):
-                return False
-            return all(check(child) for child in node.children)
-        return check(self.root)
-
-    @icontract.ensure(lambda self: self._all_nodes_valid())
+    # @icontract.require(lambda self: self.CHAVE INSERIDA NAO EXISTE NA ARVORE)
+    @icontract.ensure(lambda self: self.root.subtree_valid())
     def insert(self, key):
         if self.root.is_full:
             self._grow_tree()
         self.root.insert_non_full(key)
+
+    # @icontract.require(lambda self: self.CHAVE A SER REMOVIDA EXISTE NA ARVORE)
+    @icontract.ensure(lambda self: self.root.subtree_valid())
+    def remove(self, key):
+        pass
 
     def insertall(self, key: List[int]) -> None:
         for k in key:
