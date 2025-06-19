@@ -18,7 +18,15 @@ class BTree:
     def height(self):
         return self.root.height()
 
-    def insert(self, key: int) -> None:
+    def _all_nodes_valid(self) -> bool:
+        def check(node):
+            if not (node.valid_num_keys() and node.valid_num_children()):
+                return False
+            return all(check(child) for child in node.children)
+        return check(self.root)
+
+    @icontract.ensure(lambda self: self._all_nodes_valid())
+    def insert(self, key):
         if self.root.is_full:
             self._grow_tree()
         self.root.insert_non_full(key)

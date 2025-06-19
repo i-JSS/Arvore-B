@@ -1,12 +1,6 @@
 import icontract
 from typing import List
 
-def implies(a, b):
-    return not a or b
-# @icontract.invariant(lambda self: implies(self.is_root, 1 <= len(self.keys) <= 2 * self.order - 1))
-# @icontract.invariant(lambda self: implies(self.is_root, 2 <= len(self.children) <= 2 * self.order))
-# @icontract.invariant(lambda self: implies(not self.is_root, 1 <= len(self.keys) <= 2 * self.order - 1))
-# @icontract.invariant(lambda self: implies(not self.is_root, self.order <= len(self.children) <= 2 * self.order))
 @icontract.invariant(lambda self: all(self.keys[i] <= self.keys[i + 1] for i in range(len(self.keys) - 1)))
 class Node:
     def __init__(self, order: int, is_root: bool = False):
@@ -36,9 +30,6 @@ class Node:
                     i += 1
             self.children[i].insert_non_full(key)
 
-    # lambda argumentos: expressão, a lambda deve falhar
-    # if i < 0 or i >= len(parent.children):
-    #     raise IndexError("Index 'i' is out of bounds for the child list")
     @icontract.require(
         lambda self, i: 0 <= i <= self.num_children,
         "Index 'i' is out of bounds for the child list"
@@ -77,6 +68,19 @@ class Node:
         if not self.is_leaf:
             for child in self.children:
                 child.print_tree(level + 1)
+
+    def valid_num_keys(self) -> bool:
+        if self.is_root:
+            return self.is_leaf or (1 <= self.num_keys <= 2 * self.order - 1)
+        else:
+            return self.order - 1 <= self.num_keys <= 2 * self.order -1
+
+    def valid_num_children(self) -> bool:
+        if self.is_leaf:
+            return self.num_children == 0
+        if self.is_root:
+            return 2 <= self.num_children <= 2 * self.order
+        return self.order <= self.num_children <= 2 * self.order
 
     @property
     def is_leaf(self) -> bool:
