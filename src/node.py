@@ -62,7 +62,7 @@ class Node:
     def print_tree(self, level:int = 0):
         print(("  " * level), end='')
         if level > 0:
-            print("- ", end='')
+            print(f"depth: {level} - ", end='')
         print(self.keys)
 
         if not self.is_leaf:
