@@ -52,9 +52,7 @@ class Node:
         self.keys.insert(i, mid_key)
 
     def height(self):
-        if len(self.children) == 0:
-            return 0
-        return max([child.height() for child in self.children]) + 1
+        return 0 if self.is_leaf else max([child.height() for child in self.children]) + 1
 
     def print_tree(self, level:int = 0):
         print(f'{level}:{"  " * level}{"- " if level > 0 else ""} {self.keys}')
