@@ -51,7 +51,39 @@ class Node:
         self.children.insert(i + 1, new_node)
         self.keys.insert(i, mid_key)
 
-    def height(self):
+    def fill(self, i: int):
+        if i > 0 and self.children[i - 1].num_keys > self.children[i - 1].min_keys:
+            self._borrow_from_prev(i)
+        elif i < self.num_children - 1 and self.children[i + 1].num_keys > self.children[i + 1].min_keys:
+            self._borrow_from_next(i)
+        else:
+            if i < self.num_children - 1:
+                pass # fusão do filho i com o filho i+1
+            else:
+                pass # fusão do filho i - 1 com o filho i
+
+    def _borrow_from_prev(self, i: int):
+        child = self.children[i]
+        left_sibling = self.children[i - 1]
+
+        child.keys.insert(0, self.keys[i - 1])
+
+        self.keys[i - 1] = left_sibling.keys.pop()
+
+        if not child.is_leaf:
+            child.children.insert(0, left_sibling.children.pop())
+
+    def _borrow_from_next(self, i: int):
+        child = self.children[i]
+        right_sibling = self.children[i + 1]
+
+        child.keys.append(self.keys[i])
+        self.keys[i] = right_sibling.keys.pop(0)
+
+        if not child.is_leaf:
+            child.children.append(right_sibling.children.pop(0))
+
+    def height(self) -> int:
         return 0 if self.is_leaf else max([child.height() for child in self.children]) + 1
 
     def print_tree(self, level:int = 0):
