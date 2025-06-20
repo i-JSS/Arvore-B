@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, Tuple
 
 import icontract
 from node import Node
 
+@icontract.invariant(lambda self: len({level for node, level in self.nodes_with_levels() if node.is_leaf}) == 1)
 class BTree:
     def __init__(self, order: int):
         self.order: int = order
@@ -15,19 +16,19 @@ class BTree:
             self.insertall(other)
         return self
 
-    def height(self):
+    def height(self) -> int:
         return self.root.height()
 
     @icontract.require(lambda self, key: not self.search(key), "Chave a ser inserida não deve existir na árvore")
     @icontract.ensure(lambda self: self.root.subtree_valid())
-    def insert(self, key):
+    def insert(self, key: int):
         if self.root.is_full:
             self._grow_tree()
         self.root.insert_non_full(key)
 
     @icontract.require(lambda self, key: self.search(key), "Chave a ser removida deve existir na árvore")
     @icontract.ensure(lambda self: self.root.subtree_valid())
-    def remove(self, key):
+    def remove(self, key: int):
         pass
 
     def insertall(self, key: List[int]) -> None:
@@ -42,6 +43,9 @@ class BTree:
         new_root.split_child(0)
         self.root.is_root = False
         self.root = new_root
+
+    def nodes_with_levels(self) -> list[Tuple[Node, int]]:
+        return self.root.nodes_with_levels()
 
     def print_tree(self):
         self.root.print_tree()

@@ -86,7 +86,13 @@ class Node:
     def height(self) -> int:
         return 0 if self.is_leaf else max([child.height() for child in self.children]) + 1
 
-    def print_tree(self, level:int = 0):
+    def nodes_with_levels(self, level: int = 0):
+        result = [(self, level)]
+        for child in self.children:
+            result.extend(child.nodes_with_levels(level + 1))
+        return result
+
+    def print_tree(self, level: int = 0):
         print(f'{level}:{"  " * level}{"- " if level > 0 else ""} {self.keys}')
         for child in self.children:
             child.print_tree(level + 1)
@@ -94,8 +100,7 @@ class Node:
     def valid_num_keys(self) -> bool:
         if self.is_root:
             return self.is_leaf or (1 <= self.num_keys <= 2 * self.order - 1)
-        else:
-            return self.order - 1 <= self.num_keys <= 2 * self.order -1
+        return self.order - 1 <= self.num_keys <= 2 * self.order -1
 
     def valid_num_children(self) -> bool:
         if self.is_leaf:
@@ -115,20 +120,22 @@ class Node:
     
     @property
     def min_keys(self) -> int:
-        return 0 if self.is_root else self.order - 1
-    
+        if self.is_root:
+            return 0 if self.is_leaf else 1
+        return self.order - 1
+
     @property
     def max_keys(self) -> int:
         return 2 * self.order - 1
-    
+
     @property
     def is_full(self) -> bool:
-        return self.max_keys == self.num_keys
+        return self.max_keys <= self.num_keys
 
     @property
     def num_children(self) -> int:
         return len(self.children)
-    
+
     @property
     def num_keys(self) -> int:
         return len(self.keys)
