@@ -7,13 +7,13 @@ from node import Node
 class BTree:
     def __init__(self, order: int):
         self.order: int = order
-        self.root: Node = Node(order=order, is_root=True)
+        self.root: Node = Node(t=order, is_root=True)
 
     def __iadd__(self, other):
         if isinstance(other, int):
             self.insert(other)
         elif isinstance(other, List):
-            self.insertall(other)
+            self.insert_all(other)
         return self
 
     def height(self) -> int:
@@ -27,18 +27,24 @@ class BTree:
         self.root.insert_non_full(key)
 
     @icontract.require(lambda self, key: self.search(key), "Chave a ser removida deve existir na árvore")
-    @icontract.ensure(lambda self: self.root.subtree_valid())
+    @icontract.ensure(lambda self: self.root.valid_num_children(), "Subtree must have a valid number of children")
+    @icontract.ensure(lambda self: self.root.valid_num_keys(), "Subtree must have a valid number of keys")
     def remove(self, key: int):
-        pass
+        self.root.remove(key)
+        if self.root.num_keys == 0 and self.root.num_children == 0:
+            raise ValueError("Deleting from empty tree")
+        elif self.root.num_keys == 0:
+            self.root = self.root.children[0]
+            self.root.is_root = True
 
-    def insertall(self, key: List[int]) -> None:
+    def insert_all(self, key: List[int]) -> None:
         for k in key:
             self.insert(k)
 
     @icontract.snapshot(lambda self: self.height(), name="height")
     @icontract.ensure(lambda self, OLD: self.height() == OLD.height + 1)
     def _grow_tree(self):
-        new_root = Node(order=self.order, is_root=True)
+        new_root = Node(t=self.order, is_root=True)
         new_root.children.append(self.root)
         new_root.split_child(0)
         self.root.is_root = False
@@ -48,6 +54,8 @@ class BTree:
         return self.root.nodes_with_levels()
 
     def print_tree(self):
+        if self.root is None:
+            print("Empty btree")
         self.root.print_tree()
 
     def search(self, key: int, node: Node = None) -> bool:
