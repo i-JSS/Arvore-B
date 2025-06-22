@@ -30,10 +30,6 @@ class Node:
                     i += 1
             self.children[i].insert_non_full(key)
 
-    @icontract.require(
-        lambda self, i: 0 <= i <= self.num_children,
-        "Index 'i' is out of bounds for the child list"
-    )
     def split_child(self, i: int):
         order = self.t
         child = self.children[i]
@@ -50,47 +46,6 @@ class Node:
 
         self.children.insert(i + 1, new_node)
         self.keys.insert(i, mid_key)
-
-    def fill(self, i: int):
-        if i > 0 and self.children[i - 1].num_keys > self.children[i - 1].min_keys:
-            self._borrow_from_prev(i)
-        elif i < self.num_children - 1 and self.children[i + 1].num_keys > self.children[i + 1].min_keys:
-            self._borrow_from_next(i)
-        else:
-            if i < self.num_children - 1:
-                pass # fusão do filho i com o filho i+1
-            else:
-                pass # fusão do filho i - 1 com o filho i
-
-    def _borrow_from_prev(self, i: int):
-        child = self.children[i]
-        left_sibling = self.children[i - 1]
-
-        child.keys.insert(0, self.keys[i - 1])
-
-        self.keys[i - 1] = left_sibling.keys.pop()
-
-        if not child.is_leaf:
-            child.children.insert(0, left_sibling.children.pop())
-
-    def _borrow_from_next(self, i: int):
-        child = self.children[i]
-        right_sibling = self.children[i + 1]
-
-        child.keys.append(self.keys[i])
-        self.keys[i] = right_sibling.keys.pop(0)
-
-        if not child.is_leaf:
-            child.children.append(right_sibling.children.pop(0))
-
-    def height(self) -> int:
-        return 0 if self.is_leaf else max([child.height() for child in self.children]) + 1
-
-    def nodes_with_levels(self, level: int = 0):
-        result = [(self, level)]
-        for child in self.children:
-            result.extend(child.nodes_with_levels(level + 1))
-        return result
 
     def print_tree(self, level: int = 0):
         print(f'{level}:{"  " * level}{"- " if level > 0 else ""} {self.keys}')
@@ -113,23 +68,6 @@ class Node:
         if not (self.valid_num_keys() and self.valid_num_children()):
             return False
         return all(child.subtree_valid() for child in self.children)
-
-    def _find_minimum_key(self):
-        if self.is_leaf:
-            return self.keys[0]
-        return self.children[0]._find_minimum_key()
-
-    def _find_maximum_key(self):
-        if self.is_leaf:
-            return self.keys[-1]
-        return self.children[-1]._find_maximum_key()
-
-    # Assumes the key exists
-    def _find_predecessor(self, key_idx: int):
-        return self.children[key_idx]._find_maximum_key()
-
-    def _find_successor(self, key_idx: int):
-        return self.children[key_idx+1]._find_minimum_key()
 
     def remove(self, key: int) -> None:
         if key in self.keys:
@@ -183,6 +121,43 @@ class Node:
                         child = self._merge(child_idx)
             child.remove(key)
 
+    def _find_minimum_key(self):
+        if self.is_leaf:
+            return self.keys[0]
+        return self.children[0]._find_minimum_key()
+
+    def _find_maximum_key(self):
+        if self.is_leaf:
+            return self.keys[-1]
+        return self.children[-1]._find_maximum_key()
+
+    # Assumes the key exists
+    def _find_predecessor(self, key_idx: int):
+        return self.children[key_idx]._find_maximum_key()
+
+    def _find_successor(self, key_idx: int):
+        return self.children[key_idx+1]._find_minimum_key()
+
+    def _borrow_from_prev(self, i: int):
+        child = self.children[i]
+        left_sibling = self.children[i - 1]
+
+        child.keys.insert(0, self.keys[i - 1])
+        self.keys[i - 1] = left_sibling.keys.pop()
+
+        if not child.is_leaf:
+            child.children.insert(0, left_sibling.children.pop())
+
+    def _borrow_from_next(self, i: int):
+        child = self.children[i]
+        right_sibling = self.children[i + 1]
+
+        child.keys.append(self.keys[i])
+        self.keys[i] = right_sibling.keys.pop(0)
+
+        if not child.is_leaf:
+            child.children.append(right_sibling.children.pop(0))
+
     def _merge(self, key_idx: int):
         left_child = self.children[key_idx]
         right_child = self.children[key_idx+1]
@@ -196,6 +171,15 @@ class Node:
         self.children.pop(key_idx+1)
 
         return left_child
+
+    def nodes_with_levels(self, level: int = 0):
+        result = [(self, level)]
+        for child in self.children:
+            result.extend(child.nodes_with_levels(level + 1))
+        return result
+
+    def height(self) -> int:
+        return 0 if self.is_leaf else max([child.height() for child in self.children]) + 1
 
     @property
     def is_leaf(self) -> bool:

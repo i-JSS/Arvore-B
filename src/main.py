@@ -1,6 +1,4 @@
-import icontract
 from btree import BTree
-from random import randint
 
 size = 100
 ceiling = 100
