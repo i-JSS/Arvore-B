@@ -23,8 +23,3 @@ Biblioteca: icontract
 
 Para instalação de dependências: `pip install -r requirements.text`
 
----
-
-## Uso
-
-DESCREVER
