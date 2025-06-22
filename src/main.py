@@ -13,8 +13,7 @@ if __name__ == "__main__":
     print("\nBuscar chave 17:", tree.search(17))
     print("Buscar chave 20:", tree.search(20))
     print("Deleting all values")
-    for i, sample in enumerate(samples):
+    for i, sample in enumerate(samples[:-1]):
         print(f"Tree no {i}, removing {sample}")
         tree.remove(sample)
         tree.print_tree()
-    tree.print_tree()

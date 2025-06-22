@@ -27,8 +27,7 @@ class BTree:
         self.root.insert_non_full(key)
 
     @icontract.require(lambda self, key: self.search(key), "Chave a ser removida deve existir na árvore")
-    @icontract.ensure(lambda self: self.root.valid_num_children(), "Subtree must have a valid number of children")
-    @icontract.ensure(lambda self: self.root.valid_num_keys(), "Subtree must have a valid number of keys")
+    @icontract.ensure(lambda self: self.root.subtree_valid())
     def remove(self, key: int):
         self.root.remove(key)
         if self.root.num_keys == 0 and self.root.num_children == 0:
