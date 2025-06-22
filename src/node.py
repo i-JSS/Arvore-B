@@ -2,6 +2,10 @@ import icontract
 from typing import List
 
 @icontract.invariant(lambda self: all(self.keys[i] <= self.keys[i + 1] for i in range(len(self.keys) - 1)))
+@icontract.invariant(lambda self: all(self._is_left_subtree_correct(idx) for idx in range(len(self.keys) - 1)),
+                     "Subtree left of value must have keys lower or equal than value")
+@icontract.invariant(lambda self: all(self._is_right_subtree_correct(idx) for idx in range(len(self.keys) - 1)),
+                     "Subtree right of value must have keys higher than value")
 class Node:
     def __init__(self, t: int, is_root: bool = False):
         self.t: int = t
@@ -137,6 +141,17 @@ class Node:
 
     def _find_successor(self, key_idx: int):
         return self.children[key_idx+1]._find_minimum_key()
+
+    # Ordering invariant guarantees key order, so there is no need to check against each value in the subtree
+    def _is_left_subtree_correct(self, idx: int) -> bool:
+        if self.is_leaf:
+            return True
+        return self.children[idx].keys[-1] <= self.keys[idx]
+
+    def _is_right_subtree_correct(self, idx: int) -> bool:
+        if self.is_leaf:
+            return True
+        return self.children[idx+1].keys[0] > self.keys[idx]
 
     def _borrow_from_prev(self, i: int):
         child = self.children[i]
